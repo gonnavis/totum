@@ -414,7 +414,7 @@ export default e => {
               localVector.normalize().multiplyScalar(speed);
             }
             smoothVelocity.lerp(localVector, 0.3);
-            localVector.y += -0.98;
+            localVector.y += -9.8 * timeDiffSCapped;
             // localVector.normalize();
             // localVector.multiplyScalar(0.01);
             const minDist = 0;
