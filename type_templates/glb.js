@@ -407,12 +407,24 @@ export default e => {
             // }
             // smoothVelocity.lerp(moveDelta, 0.3);
             // ------
+
+            // position
             const speed = 3 * timeDiffSCapped; // todo: Why moveCharacterController's timeDiffSCapped/elapsedTime no effect? Need multiply here?
             const followDistance = 3;
             localVector.subVectors(localPlayer.position, app.position);
             if (localVector.length() <= followDistance) {
               localVector.set(0, 0, 0);
             } else {
+
+              // raycast
+              // app.getWorldQuaternion(localQuaternion2);
+              // console.log(localQuaternion2.x, localQuaternion2.y, localQuaternion2.z, localQuaternion2.w);
+              // let collision = physicsManager.raycast(app.position, localQuaternion2.multiply(quatRotY180));
+              localVector2.copy(localVector).setY(0).normalize();
+              let collision = physicsManager.raycast(app.position, localQuaternion2.setFromUnitVectors(new THREE.Vector3(0, 0, -1), localVector2));
+              console.log(collision);
+
+              // movement
               localVector.normalize().multiplyScalar(speed);
             }
             smoothVelocity.lerp(localVector, 0.3);
@@ -428,16 +440,14 @@ export default e => {
               app.position,
             );
             app.position.y -= .5;
+
+            // rotation
             // todo: performance: reuse direction.
             localVector.subVectors(localPlayer.position, app.position) // direction
               .setY(0)
               .normalize();
             app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), localVector), 0.1);
-            //
-            app.getWorldQuaternion(localQuaternion2);
-            // console.log(localQuaternion2.x, localQuaternion2.y, localQuaternion2.z, localQuaternion2.w);
-            let collision = physicsManager.raycast(app.position, localQuaternion2.multiply(quatRotY180));
-            console.log(collision);
+
             //
             app.updateMatrixWorld();
             // const collided = flags !== 0;
