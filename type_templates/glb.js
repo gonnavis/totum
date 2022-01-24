@@ -429,13 +429,10 @@ export default e => {
             );
             app.position.y -= .5;
             // todo: performance: reuse direction.
-            const position = localPlayer.position.clone();
-            position.y = 0;
-            const direction = position.clone()
-              .sub(app.position)
+            localVector.subVectors(localPlayer.position, app.position) // direction
               .setY(0)
               .normalize();
-            app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), direction), 0.1);
+            app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), localVector), 0.1);
             //
             app.getWorldQuaternion(localQuaternion2);
             // console.log(localQuaternion2.x, localQuaternion2.y, localQuaternion2.z, localQuaternion2.w);
