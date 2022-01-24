@@ -14,6 +14,7 @@ const localEuler = new THREE.Euler();
 const localMatrix = new THREE.Matrix4();
 
 const quatRotY180 = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0));
+const quatRotY90 = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
 
 // const z180Quaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
 
@@ -416,7 +417,7 @@ export default e => {
               localVector.set(0, 0, 0);
             } else {
 
-              // raycast
+              // raycast only by offset, not care about app/fox's self orientation.
               // app.getWorldQuaternion(localQuaternion2);
               // console.log(localQuaternion2.x, localQuaternion2.y, localQuaternion2.z, localQuaternion2.w);
               // let collision = physicsManager.raycast(app.position, localQuaternion2.multiply(quatRotY180));
@@ -426,6 +427,9 @@ export default e => {
 
               // movement
               localVector.normalize().multiplyScalar(speed);
+              if (collision?.distance < 3) {
+                localVector.applyQuaternion(quatRotY90);
+              }
             }
             smoothVelocity.lerp(localVector, 0.3);
             localVector.y += -9.8 * timeDiffSCapped;
