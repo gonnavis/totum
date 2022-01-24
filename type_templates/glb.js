@@ -7,6 +7,7 @@ const {useApp, useFrame, useCleanup, useLocalPlayer, usePhysics, useLoaders, use
 
 const localVector = new THREE.Vector3();
 const localVector2 = new THREE.Vector3();
+const localVector3 = new THREE.Vector3();
 const localQuaternion = new THREE.Quaternion();
 const localQuaternion2 = new THREE.Quaternion();
 const localQuaternion3 = new THREE.Quaternion();
@@ -422,7 +423,10 @@ export default e => {
               // console.log(localQuaternion2.x, localQuaternion2.y, localQuaternion2.z, localQuaternion2.w);
               // let collision = physicsManager.raycast(app.position, localQuaternion2.multiply(quatRotY180));
               localVector2.copy(localVector).setY(0).normalize();
-              let collision = physicsManager.raycast(app.position, localQuaternion2.setFromUnitVectors(new THREE.Vector3(0, 0, -1), localVector2));
+              localVector3.copy(app.position);
+              // localVector3.y += 1; // TODO: Not hard-coded. Let raycast origin at top of the physx capsule.
+              localVector3.y += Math.random() * 1; // TODO: Also random local x axis.
+              let collision = physicsManager.raycast(localVector3, localQuaternion2.setFromUnitVectors(new THREE.Vector3(0, 0, -1), localVector2));
               console.log(collision);
 
               // movement
