@@ -446,10 +446,7 @@ export default e => {
             app.position.y -= .5;
 
             // rotation
-            // todo: performance: reuse direction.
-            localVector.subVectors(localPlayer.position, app.position) // direction
-              .setY(0)
-              .normalize();
+            localVector.setY(0).normalize();
             app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), localVector), 0.1);
 
             //
