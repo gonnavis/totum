@@ -13,6 +13,8 @@ const localQuaternion3 = new THREE.Quaternion();
 const localEuler = new THREE.Euler();
 const localMatrix = new THREE.Matrix4();
 
+const quatRotY180 = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0));
+
 // const z180Quaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
 
 export default e => {
@@ -434,6 +436,11 @@ export default e => {
               .setY(0)
               .normalize();
             app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), direction), 0.1);
+            //
+            app.getWorldQuaternion(localQuaternion2);
+            // console.log(localQuaternion2.x, localQuaternion2.y, localQuaternion2.z, localQuaternion2.w);
+            let collision = physicsManager.raycast(app.position, localQuaternion2.multiply(quatRotY180));
+            console.log(collision);
             //
             app.updateMatrixWorld();
             // const collided = flags !== 0;
