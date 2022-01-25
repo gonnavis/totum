@@ -437,12 +437,14 @@ export default e => {
             }
             smoothVelocity.lerp(localVector, 0.3);
             localVector.y += -9.8 * timeDiffSCapped;
+            // smoothVelocity.lerp(localVector, 0.3); // trying smmooth
             // localVector.normalize();
             // localVector.multiplyScalar(0.01);
             const minDist = 0;
             const flags = physicsManager.moveCharacterController(
               characterController,
               localVector,
+              // smoothVelocity, // trying smmooth
               minDist,
               timeDiffSCapped,
               app.position,
@@ -462,6 +464,7 @@ export default e => {
             const walkSpeed = 0.01;
             const runSpeed = 0.03;
             const currentSpeed = smoothVelocity.length();
+            // const currentSpeed = smoothVelocity.setY(0).length(); // trying smmooth
             if (walkAction) {
               walkAction.weight = Math.min(currentSpeed / walkSpeed, 1);
             }
