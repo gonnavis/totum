@@ -414,7 +414,8 @@ export default e => {
             const speed = 3 * timeDiffSCapped; // todo: Why moveCharacterController's timeDiffSCapped/elapsedTime no effect? Need multiply here?
             const followDistance = 3;
             localVector.subVectors(localPlayer.position, app.position);
-            if (localVector.length() <= followDistance) {
+            const distance = localVector.length();
+            if (distance <= followDistance) {
               localVector.set(0, 0, 0);
             } else {
 
@@ -452,8 +453,10 @@ export default e => {
             app.position.y -= .5;
 
             // rotation
-            localVector.setY(0).normalize();
-            app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), localVector), 0.1);
+            if (distance > followDistance) {
+              localVector.setY(0).normalize();
+              app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), localVector), 0.1);
+            }
 
             //
             app.updateMatrixWorld();
