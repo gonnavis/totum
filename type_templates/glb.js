@@ -448,20 +448,26 @@ export default e => {
               let collisionRight = physicsManager.raycast(localVector3, localQuaternion2);
               localQuaternion2.multiply(quatRotY90);
               let collisionLeft = physicsManager.raycast(localVector3, localQuaternion2);
-              // console.log(collisionLeft?.distance, collisionRight?.distance);
+              // console.log(Math.round(collisionLeft?.distance), Math.round(collisionRight?.distance));
 
               let turnQuat; // left: quatRotY90, right: quatRotY90Neg;
               if (!collisionLeft && !collisionRight) {
+                // console.log('!!', rotBias);
                 turnQuat = quatRotY90;
               } else if (!collisionLeft) {
+                // console.log('!L', rotBias);
                 turnQuat = quatRotY90;
               } else if (!collisionRight) {
+                // console.log('!R', rotBias);
                 turnQuat = quatRotY90Neg;
               } else if (collisionLeft.distance > collisionRight.distance) {
+                // console.log('L>R', rotBias);
                 turnQuat = quatRotY90;
               } else if (collisionRight.distance > collisionLeft.distance) {
+                // console.log('R>L', rotBias);
                 turnQuat = quatRotY90Neg;
               } else {
+                // console.log('else', rotBias);
                 turnQuat = quatRotY90;
               }
               // console.log(collisionTop);
@@ -474,20 +480,20 @@ export default e => {
                   // has ramp.
                   localVector2D.set(collisionTop.distance - collisionCenter.distance, halfHeight);
                   if (localVector2D.angle() > Math.PI / 4) { 
-                    console.log((turnQuat===quatRotY90) ? 1 : -1, 'ramp')
                     // ramp degree > 45deg, route around.
+                    // console.log((turnQuat===quatRotY90) ? 1 : -1, 'ramp')
                     localVector.applyQuaternion(turnQuat);
                   } else {
                     // do nothing, go straight onto ramp.
-                    console.log(0, 'ramp');
+                    // console.log(0, 'ramp');
                   }
                 } else {
-                  console.log((turnQuat===quatRotY90) ? 1 : -1)
                   // has not ramp.
+                  // console.log((turnQuat===quatRotY90) ? 1 : -1)
                   localVector.applyQuaternion(turnQuat);
                 }
               } else {
-                console.log(0);
+                // console.log(0);
               }
             }
             smoothVelocity.lerp(localVector, 0.3);
