@@ -436,10 +436,11 @@ export default e => {
 
               // raycast only by offset, not care about app/fox's self orientation.
               let collisionCenter = physicsManager.raycast(localVector3, localQuaternion2);
-              const halfHeight = 0.5; // TODO: Not hard-coded. Let raycast origin at top of the physx capsule.
+              const halfHeight = /* 0.5 */ 0.6; // TODO: Not hard-coded. Let raycast origin at top of the physx capsule. May need a little above? Such as +0.1?
               localVector3.y += halfHeight;
               // localVector3.y += Math.random() * 1; // TODO: Also random local x axis.
               let collisionTop = physicsManager.raycast(localVector3, localQuaternion2);
+              // console.log(collisionTop?.distance, collisionCenter?.distance);
               localQuaternion2.multiply(quatRotY45Neg);
               let collisionRight = physicsManager.raycast(localVector3, localQuaternion2);
               localQuaternion2.multiply(quatRotY90);
@@ -462,7 +463,6 @@ export default e => {
               // console.log(collisionTop);
               // console.log(localVector2D.angle() * THREE.MathUtils.RAD2DEG);
               
-              
               // movement
               localVector.normalize().multiplyScalar(speed); // go straight
               if (collisionTop?.distance < avoidanceDistance) { // route around, obstacle avoidance.
@@ -470,20 +470,20 @@ export default e => {
                   // has ramp.
                   localVector2D.set(collisionTop.distance - collisionCenter.distance, halfHeight);
                   if (localVector2D.angle() > Math.PI / 4) { 
-                    console.log((turnQuat===quatRotY90) ? 1 : -1, 'ramp')
+                    // console.log((turnQuat===quatRotY90) ? 1 : -1, 'ramp')
                     // ramp degree > 45deg, route around.
                     localVector.applyQuaternion(turnQuat);
                   } else {
                     // do nothing, go straight onto ramp.
-                    console.log(0, 'ramp');
+                    // console.log(0, 'ramp');
                   }
                 } else {
-                  console.log((turnQuat===quatRotY90) ? 1 : -1)
+                  // console.log((turnQuat===quatRotY90) ? 1 : -1)
                   // has not ramp.
                   localVector.applyQuaternion(turnQuat);
                 }
               } else {
-                console.log(0);
+                // console.log(0);
               }
             }
             smoothVelocity.lerp(localVector, 0.3);
