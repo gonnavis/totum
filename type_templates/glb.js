@@ -445,57 +445,64 @@ export default e => {
               app.getWorldQuaternion(localQuaternion2);
               localQuaternion2.multiply(quatRotY180);
               localQuaternion2.multiply(quatRotY45Neg);
-              let collisionRight = physicsManager.raycast(localVector3, localQuaternion2);
+              let collisionRightFront = physicsManager.raycast(localVector3, localQuaternion2);
               localQuaternion2.multiply(quatRotY90);
+              let collisionLeftFront = physicsManager.raycast(localVector3, localQuaternion2);
+              // console.log(Math.round(collisionLeftFront?.distance), Math.round(collisionRightFront?.distance));
+              app.getWorldQuaternion(localQuaternion2);
+              localQuaternion2.multiply(quatRotY180);
+              localQuaternion2.multiply(quatRotY90Neg);
+              let collisionRight = physicsManager.raycast(localVector3, localQuaternion2);
+              localQuaternion2.multiply(quatRotY180);
               let collisionLeft = physicsManager.raycast(localVector3, localQuaternion2);
               // console.log(Math.round(collisionLeft?.distance), Math.round(collisionRight?.distance));
-
-              let turnQuat; // left: quatRotY90, right: quatRotY90Neg;
-              if (!collisionLeft && !collisionRight) {
-                // console.log('!!', rotBias);
-                turnQuat = quatRotY90;
-              } else if (!collisionLeft) {
-                // console.log('!L', rotBias);
-                turnQuat = quatRotY90;
-              } else if (!collisionRight) {
-                // console.log('!R', rotBias);
-                turnQuat = quatRotY90Neg;
-              } else if (collisionLeft.distance > collisionRight.distance) {
-                // console.log('L>R', rotBias);
-                turnQuat = quatRotY90;
-              } else if (collisionRight.distance > collisionLeft.distance) {
-                // console.log('R>L', rotBias);
-                turnQuat = quatRotY90Neg;
-              } else {
-                // console.log('else', rotBias);
-                turnQuat = quatRotY90;
-              }
-              // console.log(collisionTop);
-              // console.log(localVector2D.angle() * THREE.MathUtils.RAD2DEG);
               
               // movement
-              localVector.normalize().multiplyScalar(speed); // go straight
-              if (collisionTop?.distance < avoidanceDistance) { // route around, obstacle avoidance.
-                if (collisionCenter?.distance < avoidanceDistance) { // check if has ramp
-                  // has ramp.
+              // if (collisionTop?.distance < avoidanceDistance) {
+              if (collisionTop?.distance < distance) {
+
+                let isRamp = false;
+                if (collisionTop && collisionCenter){
                   localVector2D.set(collisionTop.distance - collisionCenter.distance, halfHeight);
-                  if (localVector2D.angle() > Math.PI / 4) { 
-                    // ramp degree > 45deg, route around.
-                    // console.log((turnQuat===quatRotY90) ? 1 : -1, 'ramp')
-                    localVector.applyQuaternion(turnQuat);
-                  } else {
-                    // do nothing, go straight onto ramp.
-                    // console.log(0, 'ramp');
-                  }
-                } else {
-                  // has not ramp.
-                  // console.log((turnQuat===quatRotY90) ? 1 : -1)
-                  localVector.applyQuaternion(turnQuat);
+                  if (localVector2D.angle() < Math.PI / 4) isRamp = true;
                 }
+
+                if (isRamp){
+                  console.log('isRamp')
+                  // do nothing, go straight
+                } else {
+                  if (!collisionLeftFront && !collisionRightFront) {
+                    console.log('!!')
+                    localVector.applyQuaternion(quatRotY90);
+                  } else if (!collisionLeftFront) {
+                    if (!collisionRight){
+                      console.log('!LF !R')
+                      localVector.fromArray(collisionRightFront.normal).applyQuaternion(quatRotY90Neg);
+                    } else {
+                      console.log('!LF')
+                      localVector.x = collisionRightFront.point[0] - collisionRight.point[0];
+                      localVector.z = collisionRightFront.point[2] - collisionRight.point[2];
+                    }
+                  } else if (!collisionRightFront) {
+                    if (!collisionLeft){
+                      console.log('!RF !L')
+                      localVector.fromArray(collisionLeftFront.normal).applyQuaternion(quatRotY90);
+                    } else {
+                      console.log('!RF')
+                      localVector.x = collisionLeftFront.point[0] - collisionLeft.point[0];
+                      localVector.z = collisionLeftFront.point[2] - collisionLeft.point[2];
+                    }
+                  }
+                }
+
               } else {
-                // console.log(0);
+                console.log('isPlane')
+                // do nothing, go straight
               }
             }
+            localVector.setY(0).normalize()
+            // console.log(localVector.x.toFixed(2), localVector.z.toFixed(2));
+            localVector.multiplyScalar(speed);
             smoothVelocity.lerp(localVector, 0.3);
             localVector.y += -9.8 * timeDiffSCapped;
             // smoothVelocity.lerp(localVector, 0.3); // trying smmooth
