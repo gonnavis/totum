@@ -421,13 +421,13 @@ export default e => {
               localVector.set(0, 0, 0);
             } else {
 
-              // raycast only by offset, not care about app/fox's self orientation.
               // app.getWorldQuaternion(localQuaternion2);
               // console.log(localQuaternion2.x, localQuaternion2.y, localQuaternion2.z, localQuaternion2.w);
               // let collisionTop = physicsManager.raycast(app.position, localQuaternion2.multiply(quatRotY180));
               localVector2.copy(localVector).setY(0).normalize();
               localVector3.copy(app.position);
               localQuaternion2.setFromUnitVectors(new THREE.Vector3(0, 0, -1), localVector2)
+              // raycast only by offset, not care about app/fox's self orientation.
               let collisionCenter = physicsManager.raycast(localVector3, localQuaternion2);
               const halfHeight = 1; // TODO: Not hard-coded. Let raycast origin at top of the physx capsule.
               localVector3.y += halfHeight;
