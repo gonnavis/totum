@@ -33,9 +33,11 @@ export default e => {
   const localPlayer = useLocalPlayer();
   const Avatar = useAvatarInternal();
 
-  window.fox = app ///test
-  window.physics = physics; ///test
   // debugger ///test
+  if (app.components[0].value.indexOf('fox') >= 0 ) {
+    window.fox = app ///test
+    window.physics = physics; ///test
+  }
   let physicsMaterial;
   let characterController;
 
