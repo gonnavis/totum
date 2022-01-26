@@ -469,11 +469,11 @@ export default e => {
                 }
 
                 if (isRamp){
-                  console.log('isRamp')
+                  // console.log('isRamp')
                   // do nothing, go straight
                 } else {
                   if (!collisionLeftFront && !collisionRightFront) {
-                    console.log('!!')
+                    // console.log('!!')
                     if(shouldTurn === 'right') {
                       localVector.applyQuaternion(quatRotY90);
                     } else {
@@ -482,28 +482,50 @@ export default e => {
                   } else if (!collisionLeftFront) {
                     shouldTurn = 'right';
                     if (!collisionRight){
-                      console.log('!LF !R')
+                      // console.log('!LF !R')
                       localVector.fromArray(collisionRightFront.normal).applyQuaternion(quatRotY90Neg);
                     } else {
-                      console.log('!LF')
+                      // console.log('!LF')
                       localVector.x = collisionRightFront.point[0] - collisionRight.point[0];
                       localVector.z = collisionRightFront.point[2] - collisionRight.point[2];
                     }
                   } else if (!collisionRightFront) {
                     shouldTurn = 'left';
                     if (!collisionLeft){
-                      console.log('!RF !L')
+                      // console.log('!RF !L')
                       localVector.fromArray(collisionLeftFront.normal).applyQuaternion(quatRotY90);
                     } else {
-                      console.log('!RF')
+                      // console.log('!RF')
                       localVector.x = collisionLeftFront.point[0] - collisionLeft.point[0];
                       localVector.z = collisionLeftFront.point[2] - collisionLeft.point[2];
                     }
+                  } else if (collisionLeftFront.distance > collisionRightFront.distance) {
+                    shouldTurn = 'right';
+                    if (!collisionRight){
+                      // console.log('!LF !R')
+                      localVector.fromArray(collisionRightFront.normal).applyQuaternion(quatRotY90Neg);
+                    } else {
+                      // console.log('!LF')
+                      localVector.x = collisionRightFront.point[0] - collisionRight.point[0];
+                      localVector.z = collisionRightFront.point[2] - collisionRight.point[2];
+                    }
+                  } else if (collisionRightFront.distance > collisionLeftFront.distance) {
+                    shouldTurn = 'left';
+                    if (!collisionLeft){
+                      // console.log('!RF !L')
+                      localVector.fromArray(collisionLeftFront.normal).applyQuaternion(quatRotY90);
+                    } else {
+                      // console.log('!RF')
+                      localVector.x = collisionLeftFront.point[0] - collisionLeft.point[0];
+                      localVector.z = collisionLeftFront.point[2] - collisionLeft.point[2];
+                    }
+                  } else {
+                    console.log('todo');
                   }
                 }
 
               } else {
-                console.log('isPlane')
+                // console.log('isPlane')
                 // do nothing, go straight
               }
             }
