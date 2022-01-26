@@ -34,6 +34,7 @@ export default e => {
   const Avatar = useAvatarInternal();
 
   // debugger ///test
+  let shouldTurn = 'right';
   if (app.components[0].value.indexOf('fox') >= 0 ) {
     window.fox = app ///test
     window.physics = physics; ///test
@@ -473,8 +474,13 @@ export default e => {
                 } else {
                   if (!collisionLeftFront && !collisionRightFront) {
                     console.log('!!')
-                    localVector.applyQuaternion(quatRotY90);
+                    if(shouldTurn === 'right') {
+                      localVector.applyQuaternion(quatRotY90);
+                    } else {
+                      localVector.applyQuaternion(quatRotY90Neg);
+                    }
                   } else if (!collisionLeftFront) {
+                    shouldTurn = 'right';
                     if (!collisionRight){
                       console.log('!LF !R')
                       localVector.fromArray(collisionRightFront.normal).applyQuaternion(quatRotY90Neg);
@@ -484,6 +490,7 @@ export default e => {
                       localVector.z = collisionRightFront.point[2] - collisionRight.point[2];
                     }
                   } else if (!collisionRightFront) {
+                    shouldTurn = 'left';
                     if (!collisionLeft){
                       console.log('!RF !L')
                       localVector.fromArray(collisionLeftFront.normal).applyQuaternion(quatRotY90);
