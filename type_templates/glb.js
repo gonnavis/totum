@@ -48,7 +48,7 @@ export default e => {
     window.physics = physics; ///test
 
     let material = new THREE.LineBasicMaterial({
-      color: 0xffff00
+      color: 0x00ff00
     });
     const points = [];
     points.push( new THREE.Vector3( 0, 0, 0 ) );
@@ -489,20 +489,21 @@ export default e => {
               localVector3.copy(app.position);
               localQuaternion2.setFromUnitVectors(new THREE.Vector3(0, 0, -1), localVector2)
 
+              // TODO: Not hard-coded. Let raycast origin at top of the physx capsule. 
+              // const halfCapsuleHeight = 0.5; // May need a little above or beneath? Such as +-0.1?
+              // const halfCapsuleHeight = 0.6; // +0.1 good for cases that go through the hole, but bad that will try to go onto obstacles that can not stride.
+              // localVector3.y += Math.random() * 1; // TODO: Also random local x axis.
+              const capsuleHeight = 1;
+              const halfCapsuleHeight = capsuleHeight / 2;
+
               // raycast only by offset, not care about app/fox's self orientation.
+              localVector3.y += halfCapsuleHeight;
               let collisionCenter = physicsManager.raycast(localVector3, localQuaternion2);
               lineCenterWrap.position.copy(localVector3);  ///test
               lineCenter.quaternion.copy(localQuaternion2); ///test
               lineCenterWrap.updateMatrixWorld(); ///test
-
-              // TODO: Not hard-coded. Let raycast origin at top of the physx capsule. 
-              // const halfCapsuleHeight = 0.5; // May need a little above or beneath? Such as +-0.1?
-              // const halfCapsuleHeight = 0.6; // +0.1 good for cases that go through the hole, but bad that will try to go onto obstacles that can not stride.
-              const capsuleHeight = 1;
-              const halfCapsuleHeight = capsuleHeight;
-              localVector3.y += halfCapsuleHeight;
-
-              // localVector3.y += Math.random() * 1; // TODO: Also random local x axis.
+              localVector3.copy(app.position);
+              localVector3.y += capsuleHeight;
               let collisionTop = physicsManager.raycast(localVector3, localQuaternion2);
               lineTopWrap.position.copy(localVector3);  ///test
               lineTop.quaternion.copy(localQuaternion2); ///test
