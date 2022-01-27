@@ -274,12 +274,12 @@ export default e => {
 
         physicsMaterial = new THREE.Vector3(0, 0, 0);
         characterController = physicsManager.createCharacterController(
-          0.5,
-          0.01,
-          0.1,
-          0.5,
-          app.position,
-          physicsMaterial,
+          0.5, // radius
+          0.01, // height
+          0.1, // contactOffset
+          0.5, // stepOffset
+          app.position, // position
+          physicsMaterial, // mat
         );
       }
       
@@ -422,8 +422,8 @@ export default e => {
             // position
             const speed = 3 * timeDiffSCapped; // todo: Why moveCharacterController's timeDiffSCapped/elapsedTime no effect? Need multiply here?
             const followDistance = 3;
-            // const avoidanceDistance = 10;
-            const avoidanceDistance = 3;
+            const avoidanceDistance = 5;
+            // const avoidanceDistance = 3;
             localVector.subVectors(localPlayer.position, app.position);
             const distance = localVector.length();
             if (distance <= followDistance) {
@@ -436,8 +436,14 @@ export default e => {
 
               // raycast only by offset, not care about app/fox's self orientation.
               let collisionCenter = physicsManager.raycast(localVector3, localQuaternion2);
-              const halfHeight = /* 0.5 */ 0.6; // TODO: Not hard-coded. Let raycast origin at top of the physx capsule. May need a little above? Such as +0.1?
-              localVector3.y += halfHeight;
+
+              // TODO: Not hard-coded. Let raycast origin at top of the physx capsule. 
+              // const halfCapsuleHeight = 0.5; // May need a little above or beneath? Such as +-0.1?
+              // const halfCapsuleHeight = 0.6; // +0.1 good for cases that go through the hole, but bad that will try to go onto obstacles that can not stride.
+              const capsuleHeight = 1;
+              const halfCapsuleHeight = capsuleHeight;
+              localVector3.y += halfCapsuleHeight;
+
               // localVector3.y += Math.random() * 1; // TODO: Also random local x axis.
               let collisionTop = physicsManager.raycast(localVector3, localQuaternion2);
               // console.log(collisionTop?.distance, collisionCenter?.distance);
@@ -465,7 +471,7 @@ export default e => {
 
                 let isRamp = false;
                 if (collisionTop && collisionCenter){
-                  localVector2D.set(collisionTop.distance - collisionCenter.distance, halfHeight);
+                  localVector2D.set(collisionTop.distance - collisionCenter.distance, halfCapsuleHeight);
                   if (localVector2D.angle() < Math.PI / 4) isRamp = true;
                 }
 
@@ -487,7 +493,7 @@ export default e => {
                       localVector.fromArray(collisionRightFront.normal).applyQuaternion(quatRotY90Neg);
                     } else {
                       // console.log('!LF')
-                      if (collisionFront) {
+                      if (collisionFront?.distance < avoidanceDistance) {
                         localVector.x = collisionFront.point[0] - collisionRight.point[0];
                         localVector.z = collisionFront.point[2] - collisionRight.point[2];
                       } else {
@@ -502,7 +508,7 @@ export default e => {
                       localVector.fromArray(collisionLeftFront.normal).applyQuaternion(quatRotY90);
                     } else {
                       // console.log('!RF')
-                      if (collisionFront) {
+                      if (collisionFront?.distance < avoidanceDistance) {
                         localVector.x = collisionFront.point[0] - collisionLeft.point[0];
                         localVector.z = collisionFront.point[2] - collisionLeft.point[2];
                       } else {
@@ -517,7 +523,7 @@ export default e => {
                       localVector.fromArray(collisionRightFront.normal).applyQuaternion(quatRotY90Neg);
                     } else {
                       // console.log('!LF')
-                      if (collisionFront) {
+                      if (collisionFront?.distance < avoidanceDistance) {
                         localVector.x = collisionFront.point[0] - collisionRight.point[0];
                         localVector.z = collisionFront.point[2] - collisionRight.point[2];
                       } else {
@@ -532,7 +538,7 @@ export default e => {
                       localVector.fromArray(collisionLeftFront.normal).applyQuaternion(quatRotY90);
                     } else {
                       // console.log('!RF')
-                      if (collisionFront) {
+                      if (collisionFront?.distance < avoidanceDistance) {
                         localVector.x = collisionFront.point[0] - collisionLeft.point[0];
                         localVector.z = collisionFront.point[2] - collisionLeft.point[2];
                       } else {
