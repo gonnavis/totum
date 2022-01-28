@@ -503,7 +503,7 @@ export default e => {
               lineCenter.quaternion.copy(localQuaternion2); ///test
               lineCenterWrap.updateMatrixWorld(); ///test
               localVector3.copy(app.position);
-              localVector3.y += capsuleHeight;
+              localVector3.y += capsuleHeight - .05;
               let collisionTop = physicsManager.raycast(localVector3, localQuaternion2);
               lineTopWrap.position.copy(localVector3);  ///test
               lineTop.quaternion.copy(localQuaternion2); ///test
@@ -511,6 +511,8 @@ export default e => {
               // console.log(collisionTop?.distance, collisionCenter?.distance);
               
               // raycast by app/pet/fox's self orientation.
+              localVector3.copy(app.position);
+              localVector3.y += capsuleHeight;
               app.getWorldQuaternion(localQuaternion2);
               localQuaternion2.multiply(quatRotY180);
               let collisionFront = physicsManager.raycast(localVector3, localQuaternion2);
