@@ -384,43 +384,13 @@ export default e => {
           rootBone.updateMatrixWorld();
         }
         if (petMixer) { // animated pet
-          if (petSpec) { // activated pet
-            // const speed = 0.0014;
-
-            // const distance = _getAppDistance();
-            // const moveDelta = localVector;
-            // moveDelta.setScalar(0);
-            // if (_isFar(distance)) { // handle rounding errors
-            //   // console.log('distance', distance, minDistance);
-            //   const localPlayer = useLocalPlayer();
-            //   const position = localPlayer.position.clone();
-            //   position.y = 0;
-            //   const direction = position.clone()
-            //     .sub(app.position)
-            //     .normalize();
-            //   const maxMoveDistance = distance - minDistance;
-            //   const moveDistance = Math.min(speed * timeDiff, maxMoveDistance);
-            //   moveDelta.copy(direction)
-            //     .multiplyScalar(moveDistance);
-            //   app.position.add(moveDelta);
-            //   app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), direction), 0.1);
-            //   app.updateMatrixWorld();
-            // } else {
-            //   /* // console.log('check', head === drop, component.attractedTo === 'fruit', typeof component.eatSpeed === 'number');
-            //   if (head === drop && component.attractedTo === 'fruit' && typeof component.eatSpeed === 'number') {
-            //     drop.scale.subScalar(1/component.eatSpeed*timeDiff);
-            //     // console.log('new scale', drop.scale.toArray());
-            //     if (drop.scale.x <= 0 || drop.scale.y <= 0 || drop.scale.z <= 0) {
-            //       dropManager.removeDrop(drop);
-            //     }
-            //   } */
-            // }
-            // smoothVelocity.lerp(moveDelta, 0.3);
-            // ------
+          if (petSpec && window.petDestBlock) { // activated pet // mark
+            // console_test: petDestBlock = startBlock
             // position
             const speed = 3 * timeDiffSCapped; // todo: Why moveCharacterController's timeDiffSCapped/elapsedTime no effect? Need multiply here?
-            const followDistance = 3;
-            localVector.subVectors(localPlayer.position, app.position);
+            // const followDistance = 3;
+            const followDistance = 0.5;
+            localVector.subVectors(window.petDestBlock.position, app.position);
             if (localVector.length() <= followDistance) {
               localVector.set(0, 0, 0);
             } else {
@@ -440,7 +410,7 @@ export default e => {
             );
             app.position.y -= .5;
             // todo: performance: reuse direction.
-            const position = localPlayer.position.clone();
+            const position = window.petDestBlock.position.clone();
             position.y = 0;
             const direction = position.clone()
               .sub(app.position)
