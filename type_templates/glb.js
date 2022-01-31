@@ -32,67 +32,11 @@ export default e => {
   const physics = usePhysics();
   const localPlayer = useLocalPlayer();
   const Avatar = useAvatarInternal();
-
-  let shouldTurn = 'right';
-
-  // debugger ///test
-  let lineCenter, lineCenterWrap; ///test
-  let lineTop, lineTopWrap; ///test
-  let lineFront, lineFrontWrap; ///test
-  let lineRightFront, lineRightFrontWrap; ///test
-  let lineLeftFront, lineLeftFrontWrap; ///test
-  let lineRight, lineRightWrap; ///test
-  let lineLeft, lineLeftWrap; ///test
+  
   if (app.components[0].value.indexOf('fox') >= 0 ) { ///test
     window.fox = app ///test
     window.physics = physics; ///test
-
-    let material = new THREE.LineBasicMaterial({
-      color: 0x00ff00
-    });
-    const points = [];
-    points.push( new THREE.Vector3( 0, 0, 0 ) );
-    points.push( new THREE.Vector3( 0, 0, -30 ) );
-    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-    //
-    lineCenterWrap = new THREE.Group();
-    lineCenter = new THREE.Line( geometry, material );
-    lineCenterWrap.add(lineCenter);
-    window.rootScene.add( lineCenterWrap );
-    //
-    lineTopWrap = new THREE.Group();
-    lineTop = new THREE.Line( geometry, material );
-    lineTopWrap.add(lineTop);
-    window.rootScene.add( lineTopWrap );
-    //
-    material = new THREE.LineBasicMaterial({
-      color: 0xff0000
-    });
-    //
-    lineFrontWrap = new THREE.Group();
-    lineFront = new THREE.Line( geometry, material );
-    lineFrontWrap.add(lineFront);
-    window.rootScene.add( lineFrontWrap );
-    //
-    lineRightFrontWrap = new THREE.Group();
-    lineRightFront = new THREE.Line( geometry, material );
-    lineRightFrontWrap.add(lineRightFront);
-    window.rootScene.add( lineRightFrontWrap );
-    //
-    lineLeftFrontWrap = new THREE.Group();
-    lineLeftFront = new THREE.Line( geometry, material );
-    lineLeftFrontWrap.add(lineLeftFront);
-    window.rootScene.add( lineLeftFrontWrap );
-    //
-    lineRightWrap = new THREE.Group();
-    lineRight = new THREE.Line( geometry, material );
-    lineRightWrap.add(lineRight);
-    window.rootScene.add( lineRightWrap );
-    //
-    lineLeftWrap = new THREE.Group();
-    lineLeft = new THREE.Line( geometry, material );
-    lineLeftWrap.add(lineLeft);
-    window.rootScene.add( lineLeftWrap );
+    // debugger ///test
   }
   let physicsMaterial;
   let characterController;
@@ -373,7 +317,7 @@ export default e => {
     if (e.wear) {
       if (app.glb) {
         const {animations} = app.glb;
-        
+      
         petSpec = app.getComponent('pet');
         if (petSpec) {
           const walkAnimation = (petSpec.walkAnimation && petSpec.walkAnimation !== petSpec.idleAnimation) ? animations.find(a => a.name === petSpec.walkAnimation) : null;
@@ -473,193 +417,36 @@ export default e => {
             // }
             // smoothVelocity.lerp(moveDelta, 0.3);
             // ------
-
             // position
             const speed = 3 * timeDiffSCapped; // todo: Why moveCharacterController's timeDiffSCapped/elapsedTime no effect? Need multiply here?
             const followDistance = 3;
-            const avoidanceDistance = 5;
-            // const avoidanceDistance = 3;
             localVector.subVectors(localPlayer.position, app.position);
-            const distance = localVector.length();
-            if (distance <= followDistance) {
+            if (localVector.length() <= followDistance) {
               localVector.set(0, 0, 0);
             } else {
-
-              localVector2.copy(localVector).setY(0).normalize();
-              localVector3.copy(app.position);
-              localQuaternion2.setFromUnitVectors(new THREE.Vector3(0, 0, -1), localVector2)
-
-              // TODO: Not hard-coded. Let raycast origin at top of the physx capsule. 
-              // const halfCapsuleHeight = 0.5; // May need a little above or beneath? Such as +-0.1?
-              // const halfCapsuleHeight = 0.6; // +0.1 good for cases that go through the hole, but bad that will try to go onto obstacles that can not stride.
-              // localVector3.y += Math.random() * 1; // TODO: Also random local x axis.
-              const capsuleHeight = 1;
-              const halfCapsuleHeight = capsuleHeight / 2;
-
-              // raycast only by offset, not care about app/fox's self orientation.
-              localVector3.y += halfCapsuleHeight;
-              let collisionCenter = physicsManager.raycast(localVector3, localQuaternion2);
-              lineCenterWrap.position.copy(localVector3);  ///test
-              lineCenter.quaternion.copy(localQuaternion2); ///test
-              lineCenterWrap.updateMatrixWorld(); ///test
-              localVector3.copy(app.position);
-              localVector3.y += capsuleHeight - .05;
-              let collisionTop = physicsManager.raycast(localVector3, localQuaternion2);
-              lineTopWrap.position.copy(localVector3);  ///test
-              lineTop.quaternion.copy(localQuaternion2); ///test
-              lineTopWrap.updateMatrixWorld(); ///test
-              // console.log(collisionTop?.distance, collisionCenter?.distance);
-              
-              // raycast by app/pet/fox's self orientation.
-              localVector3.copy(app.position);
-              localVector3.y += capsuleHeight;
-              app.getWorldQuaternion(localQuaternion2);
-              localQuaternion2.multiply(quatRotY180);
-              let collisionFront = physicsManager.raycast(localVector3, localQuaternion2);
-              lineFrontWrap.position.copy(localVector3);  ///test
-              lineFront.quaternion.copy(localQuaternion2); ///test
-              lineFrontWrap.updateMatrixWorld(); ///test
-              localQuaternion2.multiply(quatRotY45Neg);
-              let collisionRightFront = physicsManager.raycast(localVector3, localQuaternion2);
-              lineRightFrontWrap.position.copy(localVector3);  ///test
-              lineRightFront.quaternion.copy(localQuaternion2); ///test
-              lineRightFrontWrap.updateMatrixWorld(); ///test
-              localQuaternion2.multiply(quatRotY90);
-              let collisionLeftFront = physicsManager.raycast(localVector3, localQuaternion2);
-              lineLeftFrontWrap.position.copy(localVector3);  ///test
-              lineLeftFront.quaternion.copy(localQuaternion2); ///test
-              lineLeftFrontWrap.updateMatrixWorld(); ///test
-              // console.log(Math.round(collisionLeftFront?.distance), Math.round(collisionRightFront?.distance));
-              app.getWorldQuaternion(localQuaternion2);
-              localQuaternion2.multiply(quatRotY180);
-              localQuaternion2.multiply(quatRotY90Neg);
-              let collisionRight = physicsManager.raycast(localVector3, localQuaternion2);
-              lineRightWrap.position.copy(localVector3);  ///test
-              lineRight.quaternion.copy(localQuaternion2); ///test
-              lineRightWrap.updateMatrixWorld(); ///test
-              localQuaternion2.multiply(quatRotY180);
-              let collisionLeft = physicsManager.raycast(localVector3, localQuaternion2);
-              lineLeftWrap.position.copy(localVector3);  ///test
-              lineLeft.quaternion.copy(localQuaternion2); ///test
-              lineLeftWrap.updateMatrixWorld(); ///test
-              // console.log(Math.round(collisionLeft?.distance), Math.round(collisionRight?.distance));
-              
-              // movement
-              // if (collisionTop?.distance < avoidanceDistance) {
-              if (collisionTop?.distance < distance) {
-
-                let isRamp = false;
-                if (collisionTop && collisionCenter){
-                  localVector2D.set(collisionTop.distance - collisionCenter.distance, halfCapsuleHeight);
-                  if (localVector2D.angle() < Math.PI / 4) isRamp = true;
-                }
-
-                if (isRamp){
-                  // console.log('isRamp')
-                  // do nothing, go straight
-                } else {
-                  if (!collisionLeftFront && !collisionRightFront) {
-                    // console.log('!!')
-                    if(shouldTurn === 'right') {
-                      localVector.applyQuaternion(quatRotY90);
-                    } else {
-                      localVector.applyQuaternion(quatRotY90Neg);
-                    }
-                  } else if (!collisionLeftFront) {
-                    shouldTurn = 'right';
-                    if (!collisionRight){
-                      // console.log('!LF !R')
-                      localVector.fromArray(collisionRightFront.normal).applyQuaternion(quatRotY90Neg);
-                    } else {
-                      // console.log('!LF')
-                      if (collisionFront?.distance < avoidanceDistance) {
-                        localVector.x = collisionFront.point[0] - collisionRight.point[0];
-                        localVector.z = collisionFront.point[2] - collisionRight.point[2];
-                      } else {
-                        localVector.x = collisionRightFront.point[0] - collisionRight.point[0];
-                        localVector.z = collisionRightFront.point[2] - collisionRight.point[2];
-                      }
-                    }
-                  } else if (!collisionRightFront) {
-                    shouldTurn = 'left';
-                    if (!collisionLeft){
-                      // console.log('!RF !L')
-                      localVector.fromArray(collisionLeftFront.normal).applyQuaternion(quatRotY90);
-                    } else {
-                      // console.log('!RF')
-                      if (collisionFront?.distance < avoidanceDistance) {
-                        localVector.x = collisionFront.point[0] - collisionLeft.point[0];
-                        localVector.z = collisionFront.point[2] - collisionLeft.point[2];
-                      } else {
-                        localVector.x = collisionLeftFront.point[0] - collisionLeft.point[0];
-                        localVector.z = collisionLeftFront.point[2] - collisionLeft.point[2];
-                      }
-                    }
-                  } else if (collisionLeftFront.distance > collisionRightFront.distance) {
-                    shouldTurn = 'right';
-                    if (!collisionRight){
-                      // console.log('!LF !R')
-                      localVector.fromArray(collisionRightFront.normal).applyQuaternion(quatRotY90Neg);
-                    } else {
-                      // console.log('!LF')
-                      if (collisionFront?.distance < avoidanceDistance) {
-                        localVector.x = collisionFront.point[0] - collisionRight.point[0];
-                        localVector.z = collisionFront.point[2] - collisionRight.point[2];
-                      } else {
-                        localVector.x = collisionRightFront.point[0] - collisionRight.point[0];
-                        localVector.z = collisionRightFront.point[2] - collisionRight.point[2];
-                      }
-                    }
-                  } else if (collisionRightFront.distance > collisionLeftFront.distance) {
-                    shouldTurn = 'left';
-                    if (!collisionLeft){
-                      // console.log('!RF !L')
-                      localVector.fromArray(collisionLeftFront.normal).applyQuaternion(quatRotY90);
-                    } else {
-                      // console.log('!RF')
-                      if (collisionFront?.distance < avoidanceDistance) {
-                        localVector.x = collisionFront.point[0] - collisionLeft.point[0];
-                        localVector.z = collisionFront.point[2] - collisionLeft.point[2];
-                      } else {
-                        localVector.x = collisionLeftFront.point[0] - collisionLeft.point[0];
-                        localVector.z = collisionLeftFront.point[2] - collisionLeft.point[2];
-                      }
-                    }
-                  } else {
-                    console.log('path-finding todo');
-                  }
-                }
-
-              } else {
-                // console.log('isPlane')
-                // do nothing, go straight
-              }
+              localVector.normalize().multiplyScalar(speed);
             }
-            localVector.setY(0).normalize()
-            // console.log(localVector.x.toFixed(2), localVector.z.toFixed(2));
-            localVector.multiplyScalar(speed);
             smoothVelocity.lerp(localVector, 0.3);
-            localVector.y += -9.8 * timeDiffSCapped;
-            // smoothVelocity.lerp(localVector, 0.3); // trying smmooth
+            localVector.y += -0.98;
             // localVector.normalize();
             // localVector.multiplyScalar(0.01);
             const minDist = 0;
             const flags = physicsManager.moveCharacterController(
               characterController,
               localVector,
-              // smoothVelocity, // trying smmooth
               minDist,
               timeDiffSCapped,
               app.position,
             );
             app.position.y -= .5;
-
-            // rotation
-            if (distance > followDistance) {
-              localVector.setY(0).normalize();
-              app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), localVector), 0.1);
-            }
-
+            // todo: performance: reuse direction.
+            const position = localPlayer.position.clone();
+            position.y = 0;
+            const direction = position.clone()
+              .sub(app.position)
+              .setY(0)
+              .normalize();
+            app.quaternion.slerp(localQuaternion.setFromUnitVectors(localVector2.set(0, 0, 1), direction), 0.1);
             //
             app.updateMatrixWorld();
             // const collided = flags !== 0;
@@ -669,7 +456,6 @@ export default e => {
             const walkSpeed = 0.01;
             const runSpeed = 0.03;
             const currentSpeed = smoothVelocity.length();
-            // const currentSpeed = smoothVelocity.setY(0).length(); // trying smmooth
             if (walkAction) {
               walkAction.weight = Math.min(currentSpeed / walkSpeed, 1);
             }
